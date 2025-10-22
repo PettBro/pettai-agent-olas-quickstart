@@ -2,6 +2,8 @@
 
 A quickstart to run OLAS agents
 
+> **Note**: This repository is based on [valory-xyz/quickstart](https://github.com/valory-xyz/quickstart) and maintains compatibility with the original project.
+
 ## Compatible Systems
 
 - Windows 10/11: WSL2 (Recommended) / Git BASH
@@ -30,17 +32,18 @@ Clone this repository locally and execute:
 chmod +x run_service.sh
 ./run_service.sh <agent_config.json>
 ```
+
 where `agent_config.json` is the path to your agent configuration file. Check the `configs/` directory for available configurations of different agents.
 
 #### Supported agents
 
-| Agent | Config path | Docs |
-| --- | --- | --- |
-| Trader | `configs/config_predict_trader.json` | [Trader README](scripts/predict_trader/README.md) |
-| Mech | `configs/config_mech.json` | [Mech README](https://github.com/valory-xyz/mech) |
-| Optimus | `configs/config_optimus.json` | [Optimus README](https://github.com/valory-xyz/optimus) |
-| Modius | `configs/config_modius.json` | [Modius README](https://github.com/valory-xyz/modius-quickstart) |
-| Agents.fun | `configs/config_agents.fun.json` | [Agents.fun README](https://github.com/dvilelaf/meme-ooorr) |
+| Agent      | Config path                          | Docs                                                             |
+| ---------- | ------------------------------------ | ---------------------------------------------------------------- |
+| Trader     | `configs/config_predict_trader.json` | [Trader README](scripts/predict_trader/README.md)                |
+| Mech       | `configs/config_mech.json`           | [Mech README](https://github.com/valory-xyz/mech)                |
+| Optimus    | `configs/config_optimus.json`        | [Optimus README](https://github.com/valory-xyz/optimus)          |
+| Modius     | `configs/config_modius.json`         | [Modius README](https://github.com/valory-xyz/modius-quickstart) |
+| Agents.fun | `configs/config_agents.fun.json`     | [Agents.fun README](https://github.com/dvilelaf/meme-ooorr)      |
 
 ### For Non-Stakers
 
@@ -89,14 +92,14 @@ Find below a diagram of the possible status a service can be in the staking prog
 
 Services can become staked by invoking the `stake()` contract method, where service parameters and deposit amounts are verified. Staked services can call the `checkpoint()` method at regular intervals, ensuring liveness checks and calculating staking rewards. In case a service remains inactive beyond the specified `maxAllowedInactivity` time, it faces eviction from the staking program, ceasing to accrue additional rewards. Staked or evicted services can be unstaked by calling the `unstake()` contract method. They can do so after `minStakingDuration` has passed or if no more staking rewards are available.
 
- __Notes__:
+**Notes**:
 
 - Staking is currently in a testing phase, so the number of agents that can be staked might be limited.
-- Services are evicted after accumulating 2 consecutive checkpoints without meeting the activity threshold.  
+- Services are evicted after accumulating 2 consecutive checkpoints without meeting the activity threshold.
 - Currently, the minimum staking time is approximately 3 days. In particular, a service cannot be unstaked during the minimum staking period.
 - Once a staking program is selected, you can reset your preference by stopping your agent by running `./stop_service.sh <agent_config.json>` and then running the command
 
-  ``` bash
+  ```bash
   ./reset_staking.sh  <agent_config.json>
   ```
 
@@ -109,6 +112,7 @@ Once the command has completed, i.e. the service is running, you can see the liv
 ```bash
 docker logs $(docker ps --filter "name=<agent_name>" --format "{{.Names}}" | grep "_abci" | head -n 1) --follow
 ```
+
 Replace `<agent_name>` with the name of the agent. For example: `trader`.
 
 You can also use this command to investigate your agent's logs:
@@ -209,39 +213,39 @@ Execute the following steps in a PowerShell terminal:
 
 1. Install [Git](https://git-scm.com/download/win) and Git Bash:
 
-    ```bash
-    winget install --id Git.Git -e --source winget
-    ```
+   ```bash
+   winget install --id Git.Git -e --source winget
+   ```
 
 2. Install Python 3.10:
 
-    ```bash
-    winget install Python.Python.3.10
-    ```
+   ```bash
+   winget install Python.Python.3.10
+   ```
 
 3. Close and re-open the PowerShell terminal.
 
 4. Install [Poetry](https://python-poetry.org/docs/):
 
-    ```bash
-    curl.exe -sSL https://install.python-poetry.org | python -
-    ```
+   ```bash
+   curl.exe -sSL https://install.python-poetry.org | python -
+   ```
 
 5. Add Poetry to your user's path:
 
-    ```bash
-    $existingUserPath = (Get-Item -Path HKCU:\Environment).GetValue("PATH", $null, "DoNotExpandEnvironmentNames")
+   ```bash
+   $existingUserPath = (Get-Item -Path HKCU:\Environment).GetValue("PATH", $null, "DoNotExpandEnvironmentNames")
 
-    $newUserPath = "$existingUserPath;$Env:APPDATA\Python\Scripts"
+   $newUserPath = "$existingUserPath;$Env:APPDATA\Python\Scripts"
 
-    [System.Environment]::SetEnvironmentVariable("Path", $newUserPath, "User")
-    ```
+   [System.Environment]::SetEnvironmentVariable("Path", $newUserPath, "User")
+   ```
 
 6. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/):
 
-    ```bash
-    winget install -e --id Docker.DockerDesktop
-    ```
+   ```bash
+   winget install -e --id Docker.DockerDesktop
+   ```
 
 7. Log out of your Windows session and then log back in.
 
@@ -300,10 +304,10 @@ Error: Service terminatation failed with following error; ChainInteractionError(
 
 ## Build deployments without executing the service
 
-The script builds both a Docker Compose deployment (on `.operate.optimus/services/sc-*/deployment`) 
-and a Kubernetes deployment (on `.operate.optimus/services/sc-*/deployment/abci_build_k8s`). 
-Then, by default, the script will launch the local Docker Compose deployment. 
-If you just want to build the deployment without executing the service 
+The script builds both a Docker Compose deployment (on `.operate.optimus/services/sc-*/deployment`)
+and a Kubernetes deployment (on `.operate.optimus/services/sc-*/deployment/abci_build_k8s`).
+Then, by default, the script will launch the local Docker Compose deployment.
+If you just want to build the deployment without executing the service
 (for example, if you are deploying to a custom Kubernetes cluster), then execute the script as:
 
 ```bash
@@ -318,61 +322,63 @@ The JSON file should have the following schema:
 
 ### Top-level Fields
 
-| Field Name      | Type                | Description                                                                             |
-|-----------------|---------------------|-----------------------------------------------------------------------------------------|
-| name            | string              | Name of the agent/service. This name is used for caching, so don't modify it afterwards.|
-| hash            | string              | IPFS hash of the service package.                                                       |
-| description     | string              | Description of the agent/service.                                                       |
-| image           | string              | URL to an image representing the agent.                                                 |
-| service_version | string              | Version of the service.                                                                 |
-| home_chain      | string              | Name of the home blockchain network.                                                    |
-| configurations  | object              | Chain-specific configuration. See table below.                                          |
-| env_variables   | object              | Environment variables to be set for the agent. See table below.                         |
+| Field Name      | Type   | Description                                                                              |
+| --------------- | ------ | ---------------------------------------------------------------------------------------- |
+| name            | string | Name of the agent/service. This name is used for caching, so don't modify it afterwards. |
+| hash            | string | IPFS hash of the service package.                                                        |
+| description     | string | Description of the agent/service.                                                        |
+| image           | string | URL to an image representing the agent.                                                  |
+| service_version | string | Version of the service.                                                                  |
+| home_chain      | string | Name of the home blockchain network.                                                     |
+| configurations  | object | Chain-specific configuration. See table below.                                           |
+| env_variables   | object | Environment variables to be set for the agent. See table below.                          |
 
 ---
 
 #### `configurations` Object
 
-| Field Name      | Type    | Description                                                                                   |
-|-----------------|---------|-----------------------------------------------------------------------------------------------|
-| [chain name]    | object  | Keyed by chain name (e.g., "gnosis"). Contains agent configuration for that chain. See below. |
+| Field Name   | Type   | Description                                                                                   |
+| ------------ | ------ | --------------------------------------------------------------------------------------------- |
+| [chain name] | object | Keyed by chain name (e.g., "gnosis"). Contains agent configuration for that chain. See below. |
 
 ##### Example: `configurations.gnosis`
 
-| Field Name           | Type    | Description                                                                     |
-|----------------------|---------|---------------------------------------------------------------------------------|
-| agent_id             | integer | Agent ID of the registered agent package in OLAS registry.                      |
-| nft                  | string  | IPFS hash of the image of the NFT of this agent.                                |
-| threshold            | integer | It is deprecated now and will be removed in the future. Leave it `1` for now.   |
-| use_mech_marketplace | bool    | It is deprecated now and will be removed in the future. Leave it `true` for now.|
-| fund_requirements    | object  | Funding requirements for agent and safe. See table below.                       |
+| Field Name           | Type    | Description                                                                      |
+| -------------------- | ------- | -------------------------------------------------------------------------------- |
+| agent_id             | integer | Agent ID of the registered agent package in OLAS registry.                       |
+| nft                  | string  | IPFS hash of the image of the NFT of this agent.                                 |
+| threshold            | integer | It is deprecated now and will be removed in the future. Leave it `1` for now.    |
+| use_mech_marketplace | bool    | It is deprecated now and will be removed in the future. Leave it `true` for now. |
+| fund_requirements    | object  | Funding requirements for agent and safe. See table below.                        |
 
 ###### `fund_requirements` Object
 
-| Field Name (Token Address) | Type     | Description                                         |
-|----------------------------|----------|-----------------------------------------------------|
-| agent                      | number   | Amount required for the agent (in wei).             |
-| safe                       | number   | Amount required for the safe (in wei).              |
+| Field Name (Token Address) | Type   | Description                             |
+| -------------------------- | ------ | --------------------------------------- |
+| agent                      | number | Amount required for the agent (in wei). |
+| safe                       | number | Amount required for the safe (in wei).  |
 
 > Token address is `0x0000000000000000000000000000000000000000` for native currency like ETH, xDAI, etc.
+
 ---
 
 #### `env_variables` Object
 
-| Field Name                  | Type    | Description                                                                                   |
-|-----------------------------|---------|-----------------------------------------------------------------------------------------------|
-| [variable name]             | object  | Keyed by variable name. Contains details for each environment variable. See below.            |
+| Field Name      | Type   | Description                                                                        |
+| --------------- | ------ | ---------------------------------------------------------------------------------- |
+| [variable name] | object | Keyed by variable name. Contains details for each environment variable. See below. |
 
 ##### Example: `env_variables.GNOSIS_LEDGER_RPC`
 
-| Field Name      | Type    | Description                                                      |
-|-----------------|---------|------------------------------------------------------------------|
-| name            | string  | Human-readable name of the variable.                             |
-| description     | string  | Description of the variable.                                     |
-| value           | string  | Default or user-provided value.                                  |
-| provision_type  | string  | How the variable is provided: "user", "computed", or "fixed".    |
+| Field Name     | Type   | Description                                                   |
+| -------------- | ------ | ------------------------------------------------------------- |
+| name           | string | Human-readable name of the variable.                          |
+| description    | string | Description of the variable.                                  |
+| value          | string | Default or user-provided value.                               |
+| provision_type | string | How the variable is provided: "user", "computed", or "fixed". |
 
 What happens when the `provision_type` is:
+
 - `user` - The quickstart will ask for this value from CLI at runtime, and save it to avoid asking again.
 - `fixed` - The `value` written in the config.json will be provided to the agent's environment variable, as is.
 - `computed` - These are for special environment variables that the quickstart will set for you, based on other configurations like staking program, priority mech, etc.
