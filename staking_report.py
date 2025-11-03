@@ -11,19 +11,11 @@ import logging
 from datetime import datetime, timezone
 from custom_types import ChainType
 
-FALLBACK_STAKING_PARAMS = dict(
-    agent_ids=[80],
-    service_registry="0x3C1fF68f5aa342D296d4DEe4Bb1cACCA912D95fE",  # maybe this is wrong
-    staking_token="0x54330d28ca3357F294334BDC454a032e7f353416",  # maybe this is wrong
-    service_registry_token_utility="0x3C1fF68f5aa342D296d4DEe4Bb1cACCA912D95fE",  # nosec
-    min_staking_deposit=10000000000000000000,
-    activity_checker="0x29238F3d6532f326E818DC837a374CdF347A1C0a",  # nosec
-)
 OPERATE_HOME = Path.cwd() / ".operate"
 
 
 STAKING = {
-    ChainType.BASE: {"pett_ai": "0xd5EB32932e002b5FA19cD86ED61655a733B1eCe8"},
+    ChainType.BASE: {"pett_ai": "0x31183503be52391844594b4B587F0e764eB3956E"},
 }
 
 from utils import (
@@ -91,7 +83,7 @@ def staking_report(config: dict) -> None:
 
         # SAFE balance
         try:
-            safe_balance_wei = load_operator_safe_balance(OPERATE_HOME, rpc)
+            safe_balance_wei = load_operator_safe_balance(OPERATE_HOME)
             if safe_balance_wei is not None:
                 _print_status("SAFE balance", f"{wei_to_eth(safe_balance_wei):.4f} ETH")
         except Exception:
@@ -111,6 +103,13 @@ def staking_report(config: dict) -> None:
                             with open(config_path, "r") as f:
                                 service_config = json.load(f)
 
+                            logging.info(
+                                f"Inspecting service folder: {service_folder.name}"
+                            )
+                            logging.info(
+                                f"Available chains: {list(service_config.get('chain_configs', {}).keys())}"
+                            )
+
                             # Search through chain_configs for use_staking = True
                             chain_configs = service_config.get("chain_configs", {})
                             for chain_name, chain_config in chain_configs.items():
@@ -118,6 +117,9 @@ def staking_report(config: dict) -> None:
                                     "user_params", {}
                                 )
                                 if user_params.get("use_staking", False):
+                                    logging.info(
+                                        f"Selected chain '{chain_name}' with use_staking=True"
+                                    )
                                     chain_data = chain_config
                                     break
 
@@ -131,6 +133,20 @@ def staking_report(config: dict) -> None:
             return
 
         _print_subsection_header("Staking")
+        logging.info(
+            "Selected chain_data summary: "
+            + json.dumps(
+                {
+                    "ledger_rpc": chain_data.get("ledger_config", {}).get("rpc"),
+                    "token": chain_data.get("chain_data", {}).get("token"),
+                    "multisig": chain_data.get("chain_data", {}).get("multisig"),
+                    "user_params": chain_data.get("chain_data", {}).get(
+                        "user_params", {}
+                    ),
+                },
+                default=str,
+            )
+        )
         rpc = chain_data.get("ledger_config", {}).get("rpc")
         if not rpc:
             print("Error: RPC endpoint not found in ledger configuration.")
@@ -178,6 +194,10 @@ def staking_report(config: dict) -> None:
                 f"Error: Staking token address not found for ChainType {home_chain_type}."
             )
             return
+
+        logging.info(
+            f"Using staking token address: {staking_token_address} on chain {home_chain_type}"
+        )
 
         # Load ABI files
         with open(STAKING_TOKEN_JSON_PATH, "r", encoding="utf-8") as file:
@@ -257,6 +277,9 @@ def staking_report(config: dict) -> None:
             service_registry_token_utility_contract_address = (
                 staking_token_contract.functions.serviceRegistryTokenUtility().call()
             )
+            logging.info(
+                f"ServiceRegistryTokenUtility at {service_registry_token_utility_contract_address}"
+            )
             service_registry_token_utility_abi = (
                 service_registry_token_utility_data.get("abi", [])
             )
@@ -275,13 +298,16 @@ def staking_report(config: dict) -> None:
                 ).call()
             )
 
-            # Get agent bond
-            agent_ids = FALLBACK_STAKING_PARAMS.get("agent_ids", [])
-            if not agent_ids:
-                print("Error: 'agent_ids' not found in FALLBACK_STAKING_PARAMS.")
+            # Get agent bond (read agent_id from chain_data user_params)
+            agent_id = (
+                chain_data.get("chain_data", {}).get("user_params", {}).get("agent_id")
+            )
+            logging.info(f"Resolved agent_id from chain_data: {agent_id}")
+            if agent_id is None:
+                print("Error: 'agent_id' not found in user parameters.")
                 return
             agent_bond = service_registry_token_utility_contract.functions.getAgentBond(
-                service_id, agent_ids[0]  # type: ignore
+                service_id, int(agent_id)
             ).call()
 
             min_staking_deposit = (
@@ -307,7 +333,7 @@ def staking_report(config: dict) -> None:
                 ),
             )
             _print_status(
-                "Staked (agent bond)",
+                "Staked (minimum to agent bond)",
                 agent_bond_formatted,
                 _warning_message(agent_bond_decimal, min_security_deposit_decimal),
             )
@@ -325,10 +351,16 @@ def staking_report(config: dict) -> None:
                 (liveness_ratio * 60 * 60 * 24) / Decimal(1e18)
             )
 
-            multisig_nonces = activity_checker_contract.functions.getMultisigNonces(
+            multisig_nonces_raw = activity_checker_contract.functions.getMultisigNonces(
                 multisig_address
             ).call()
-            multisig_nonces = multisig_nonces[0]
+            if isinstance(multisig_nonces_raw, (list, tuple)):
+                if len(multisig_nonces_raw) == 0:
+                    print("Error: Empty multisig nonces returned by activity checker.")
+                    return
+                multisig_nonces = multisig_nonces_raw[0]
+            else:
+                multisig_nonces = int(multisig_nonces_raw)
             service_info = staking_token_contract.functions.getServiceInfo(
                 service_id
             ).call()

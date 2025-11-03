@@ -1,13 +1,13 @@
 {
 	"name": "pett_agent",
-	"hash": "bafybeidzw5pcgtlo6rsfmpvffxjy4iwufr2etjfffwncozvslcqqucc43y",
+	"hash": "bafybeifnnx27q6n4nbimarb3rj5gqor6z2ma6aj4skxcx3cjtjwbbnc4ga",
 	"description": "Pett.ai autonomous agent service for virtual pet management.",
 	"image": "https://gateway.autonolas.tech/ipfs/QmQYDGMg8m91QQkTWSSmANs5tZwKrmvUCawXZfXVVWQPcu",
 	"service_version": "v0.1.0",
 	"home_chain": "base",
 	"configurations": {
 		"base": {
-			"agent_id": 80,
+			"agent_id": 82,
 			"nft": "bafybeiaakdeconw7j5z76fgghfdjmsr6tzejotxcwnvmp3nroaw3glgyve",
 			"threshold": 1,
 			"use_mech_marketplace": false,
@@ -46,6 +46,12 @@
 		},
 		"ACTIVITY_CHECKER_CONTRACT_ADDRESS": {
 			"name": "Staking activity checker contract address",
+			"description": "",
+			"value": "",
+			"provision_type": "computed"
+		},
+		"SAFE_CONTRACT_ADDRESSES": {
+			"name": "Config safe contract addresses",
 			"description": "",
 			"value": "",
 			"provision_type": "computed"

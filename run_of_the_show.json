@@ -1,0 +1,86 @@
+{
+	"addresses": [
+		{
+			"address": "0xE43d9713a0999B965750fC94934D64CA7d5D2e15",
+			"name": "Agent EOA",
+			"description": "This is the ethereum_private_key.txt wallet in the pett_agent (main agent code). It also the owner of the Agent Safe."
+		},
+		{
+			"address": "0x616E2bCFb3531AA407d91A02a0BE352Fd0960751",
+			"name": "Multisig aka Master Safe",
+			"description": "This GnosisSafeProxy, also known as AI Agent Safe Multisig, is the multisig that will be used to perform calls from the Agent EOA.",
+			"todo": "From the Agent EOA call execTransaction on Multisig above with the method recordAction() on the ActionRepo contract to register correctly actions/transactions performed by the agent."
+		},
+		{
+			"address": "0x34C895f302D0b5cf52ec0Edd3945321EB0f83dd5",
+			"name": "Service Registry Token Utility",
+			"description": "Olas token, can be whatever ERC20"
+		},
+		{
+			"address": "0x3C1fF68f5aa342D296d4DEe4Bb1cACCA912D95fE",
+			"name": "Service Registry",
+			"description": "we call to register agents"
+		},
+		{
+			"address": "0x907afc85f3922cbdeb7b9ed806742b4ef998df31",
+			"name": "Action Repository",
+			"description": "This is the action repository contract called by the agent to register actions/transactions performed.",
+			"deploy_params": {
+				"owner": {
+					"description": "The owner of the action repository contract",
+					"note": "Can be whatever address, we will use the Agent EOA for now",
+					"value": "0xC859964b5682CE4D0B1E743c01100a7e7ce72066"
+				},
+				"signer": {
+					"note": "The address of the main signer that will be used to sign the transactions for the action repository contract.",
+					"value": "0x6a08382311AA9971a79a21d4FE2D613aE0FebFa94"
+				}
+			},
+			"WARNING": "The multisig will be the one that will perform the calls to the action repository contract."
+		},
+		{
+			"address": "0x7ad8e6032849edd8bf742e459722ee8b10e2ccfc",
+			"name": "Activity Checker",
+			"description": "This is the contract that will be used to check if the agent is active and eligible for rewards.",
+			"deploy_params": {
+				"owner": {
+					"description": "The owner of the activity checker contract",
+					"note": "Can be whatever address, we will use the Agent EOA for now",
+					"value": "0xC859964b5682CE4D0B1E743c01100a7e7ce72066"
+				},
+				"repository": {
+					"note": "The action repository contract address",
+					"value": "0x907afc85f3922cbdeb7b9ed806742b4ef998df31"
+				},
+				"livenessRatio": {
+					"description": "The liveness ratio captures the number of agent multisig transactions per second. It is the minimum number of transactions the **agent multisig** needs to perform in order to pass the liveness check and earn a reward",
+					"note": "For now we will use 24 txs per day (as an example). The agent executes 1 tx every ~30 mins so a user needs to have the agent running for 12 hours (24 * 0.5)",
+					"math": "24 * 10^18 / (24 * 60 * 60) = 277777777777778",
+					"value": "277777777777778"
+				}
+			}
+		},
+		{
+			"address": "0x31183503be52391844594b4B587F0e764eB3956E",
+			"name": "Staking Contract",
+			"description": "This is the staking contract that will be used to stake the agent.",
+			"note": "After deploying it, we need to deposit OLAS to initialize the staking. ALSO, we need a CRON job to call the checkpoint() function every 12-24 hours to allow the users to claim the rewards.",
+			"params": {
+				"Maximum number of staked agents": 500,
+				"Rewards OLAS per second": 0.00000087962962963,
+				"Minimum service staking deposit, OLAS": 10,
+				"Maximum number of inactivity periods": 2,
+				"Maximum number of staking periods": 2,
+				"Liveness period, seconds": 86400,
+				"Time for emissions, seconds": 86400,
+				"Number of agent instances": 1,
+				"Agent IDs": [
+					82
+				],
+				"Multisig threshold": 0,
+				"Service configuration hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+				"Activity checker address": "0x7ad8e6032849edd8bf742e459722ee8b10e2ccfc"
+			}
+		}
+	]
+}
