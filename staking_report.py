@@ -370,7 +370,7 @@ def staking_report(config: dict) -> None:
             )
             multisig_nonces_current_epoch = multisig_nonces_since_last_cp
             _print_status(
-                f"{str(home_chain_type).rsplit('.', maxsplit=1)[-1]} txs in current epoch ",
+                f"txs in current epoch: ",
                 str(multisig_nonces_current_epoch),
                 _warning_message(
                     Decimal(multisig_nonces_current_epoch),

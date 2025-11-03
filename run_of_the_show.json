@@ -54,9 +54,20 @@
 				},
 				"livenessRatio": {
 					"description": "The liveness ratio captures the number of agent multisig transactions per second. It is the minimum number of transactions the **agent multisig** needs to perform in order to pass the liveness check and earn a reward",
-					"note": "For now we will use 24 txs per day (as an example). The agent executes 1 tx every ~30 mins so a user needs to have the agent running for 12 hours (24 * 0.5)",
-					"math": "24 * 10^18 / (24 * 60 * 60) = 277777777777778",
-					"value": "277777777777778"
+					"note": "For now we will use 8 txs per day (as an example). The agent executes 1 tx every ~7 mins so a user needs to have the agent running for around 1 hour (8 * 0.5)",
+					"math": "8 * 10^18 / (24 * 60 * 60) = 92592592592592",
+					"value": "92592592592592",
+					"WARNING": "we need to decrease this number; 24 txs. need to change the interval to be 5 mins and then change the liveness to be -> 8 * 10^18 / (24 * 60 * 60) = 92592592592592 to be 40 mins to unlock the agent."
+					// TODO: IMPORTANT get an avg. tx gost in wei amount per month to ask the user the fund the agent with ETH. do some calculation if the agent pauses after it receives the rewards early. 
+					// pet cannot because we already performed the 8 actions needed. 
+					// in the future we will add a setting to pause the agent after it reaches the 8 actions needed to unlock claims.
+					//TODO: implement in the staking_report.py to have: 
+					// - how many txs the agent has performed in the current epoch and how many do we need to perform to unlock claims.
+					// - time to end epoch 
+					//* We already have this above
+					//! Unsure about this below, we'll just test the checkpoint() -> and see if my OLAS balance changed.
+					// TODO: when booting the agent call claim if epoch changed. Check when epoch will change and then if the has passed perform claim if we already have the number of txs needed to unlock claims.
+					// TODO: implement the checkpoint CRON job to call checkpoint() function every 24 hours in our server. 
 				}
 			}
 		},
