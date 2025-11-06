@@ -163,6 +163,18 @@ If your service is staked, you can claim accrued OLAS staking rewards through th
 
 The accrued OLAS will be transferred to your service Safe without having to unstake your service.
 
+#### Automated hourly claims via Safe
+
+Run the new automation helper to monitor rewards and trigger Safe-based `claim()` calls using the multisig specified in `.operate/wallets/ethereum.json`:
+
+```
+poetry run python claim_rewards.py [--interval 3600] [--once] [--dry-run]
+```
+
+- The default interval is one hour; adjust `--interval` (seconds) if you prefer a different cadence.
+- Use `--once` to perform a single check (handy for cron jobs) or `--dry-run` to validate connectivity without submitting a transaction.
+- The helper signs Safe transactions with the operator key from `.operate/services/.../config.json`; ensure the environment Python version satisfies `pyproject.toml` (`>=3.9,<3.12`).
+
 ### Backups
 
 Agent runners are recommended to create a [backup](#backup-and-recovery) of the relevant secret key material.
