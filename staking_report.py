@@ -235,10 +235,11 @@ def staking_report(config: dict) -> None:
                     else f"ended {hours}h {minutes}m {seconds}s ago"
                 )
                 _print_status("Time to epoch end", when_text)
-                _print_status(
-                    "Checkpoint needed?",
-                    _color_bool(seconds_delta <= 0, "Yes", "No"),
-                )
+
+                if seconds_delta < 0:
+                    print(
+                        "Checkpoint has not being called yet for the previous epoch.",
+                    )
             except Exception:
                 pass
             _print_status(
@@ -306,37 +307,6 @@ def staking_report(config: dict) -> None:
             if agent_id is None:
                 print("Error: 'agent_id' not found in user parameters.")
                 return
-            agent_bond = service_registry_token_utility_contract.functions.getAgentBond(
-                service_id, int(agent_id)
-            ).call()
-
-            min_staking_deposit = (
-                staking_token_contract.functions.minStakingDeposit().call()
-            )
-
-            security_deposit_formatted = wei_to_olas(security_deposit)
-            agent_bond_formatted = wei_to_olas(agent_bond)
-            min_staking_deposit_formatted = wei_to_olas(min_staking_deposit)
-
-            security_deposit_decimal = Decimal(security_deposit_formatted.split()[0])
-            min_security_deposit_decimal = Decimal(
-                min_staking_deposit_formatted.split()[0]
-            )
-
-            agent_bond_decimal = Decimal(agent_bond_formatted.split()[0])
-
-            _print_status(
-                "Staked (security deposit)",
-                security_deposit_formatted,
-                _warning_message(
-                    security_deposit_decimal, min_security_deposit_decimal
-                ),
-            )
-            _print_status(
-                "Staked (minimum to agent bond)",
-                agent_bond_formatted,
-                _warning_message(agent_bond_decimal, min_security_deposit_decimal),
-            )
 
             # Accrued rewards
             service_info = staking_token_contract.functions.mapServiceInfo(
