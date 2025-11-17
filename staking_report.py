@@ -278,9 +278,9 @@ def staking_report(config: dict) -> None:
             service_registry_token_utility_contract_address = (
                 staking_token_contract.functions.serviceRegistryTokenUtility().call()
             )
-            logging.info(
+            """ logging.info(
                 f"ServiceRegistryTokenUtility at {service_registry_token_utility_contract_address}"
-            )
+            ) """
             service_registry_token_utility_abi = (
                 service_registry_token_utility_data.get("abi", [])
             )
@@ -290,7 +290,7 @@ def staking_report(config: dict) -> None:
                 abi=service_registry_token_utility_abi,
             )
 
-            print("Current operator address", operator_address)
+            _print_status("Current operator address", operator_address)
 
             # Get security deposit
             security_deposit = (
