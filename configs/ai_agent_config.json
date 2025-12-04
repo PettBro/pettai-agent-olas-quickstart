@@ -38,7 +38,7 @@
 			"value": "",
 			"provision_type": "computed"
 		},
-		"STAKING_TOKEN_CONTRACT_ADDRESS": {
+		"STAKING_CONTRACT_ADDRESS": {
 			"name": "Staking token contract address",
 			"description": "",
 			"value": "",
