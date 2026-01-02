@@ -89,7 +89,7 @@ fi
 
 # Install dependencies and run the agent througth the middleware
 poetry install --only main --no-cache
-poetry run pip install --upgrade packaging  # TODO: update packaging version from open-aea
+poetry run pip install "packaging<24,>=23.1"
 
 # Run operate CLI with safe gas patch applied
 poetry run python run_operate_with_patch.py quickstart $@
